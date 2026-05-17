@@ -2,7 +2,7 @@
 
 > Instant international payments for Nigerian freelancers — powered by Stellar and stablecoins.
 
-[![CI](https://github.com/your-org/afripay/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/afripay/actions/workflows/ci.yml)
+[![CI](https://github.com/devUnixx/afripay/actions/workflows/ci.yml/badge.svg)](https://github.com/devUnixx/afripay/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Built on Stellar](https://img.shields.io/badge/Built%20on-Stellar-7B2FBE)](https://stellar.org)
 
@@ -132,7 +132,7 @@ afripay/
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-org/afripay.git
+git clone https://github.com/devUnixx/afripay.git
 cd afripay
 
 # Install dependencies
@@ -215,8 +215,8 @@ After deploying, configure these webhook URLs in your provider dashboards:
 
 | Provider | Webhook URL |
 |----------|-------------|
-| MoonPay | `https://your-domain.com/api/webhooks/moonpay` |
-| Yellow Card | `https://your-domain.com/api/webhooks/yellowcard` |
+| MoonPay | `https://afripay.io/api/webhooks/moonpay` |
+| Yellow Card | `https://afripay.io/api/webhooks/yellowcard` |
 
 ---
 

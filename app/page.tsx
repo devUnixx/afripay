@@ -87,7 +87,7 @@ export default function HomePage() {
         <p>
           © {new Date().getFullYear()} AfriPay · Built with ❤️ for Nigerian freelancers ·{" "}
           <a
-            href="https://github.com/your-org/afripay"
+            href="https://github.com/devUnixx/afripay"
             className="hover:text-gray-600"
             target="_blank"
             rel="noopener noreferrer"

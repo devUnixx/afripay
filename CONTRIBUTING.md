@@ -13,7 +13,7 @@ Thank you for your interest in contributing! AfriPay is open source and welcomes
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/your-org/afripay.git
+git clone https://github.com/devUnixx/afripay.git
 cd afripay
 
 # 2. Install dependencies
