@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PAID
+  CANCELLED
+  OVERDUE
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum Currency {
+  USDC
+  NGN
+  USD
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id              String   @id @default(cuid())
+  privyId         String   @unique
+  email           String   @unique
+  name            String?
+  avatarUrl       String?
+  // Stellar embedded wallet (managed by Privy)
+  stellarAddress  String?  @unique
+  // Yellow Card KYC
+  yellowCardId    String?
+  bankAccountName String?
+  bankAccountNo   String?
+  bankCode        String?
+  onboarded       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  invoices    Invoice[]
+  withdrawals Withdrawal[]
+
+  @@index([privyId])
+  @@index([email])
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Public-facing token for the payment link
+  token       String        @unique @default(cuid())
+  title       String
+  description String?
+  clientName  String
+  clientEmail String
+  amountUsd   Decimal       @db.Decimal(18, 6)
+  status      InvoiceStatus @default(DRAFT)
+  dueDate     DateTime?
+  paidAt      DateTime?
+  // Stellar transaction hash when payment is received
+  stellarTxHash String?
+  // MoonPay transaction id
+  moonpayTxId   String?
+  // Prevent auto-cancellation
+  doNotAutoCancel Boolean @default(false)
+  // Escrow / dispute flags
+  hasActiveEscrow  Boolean @default(false)
+  hasActiveDispute Boolean @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  lineItems LineItem[]
+
+  @@index([userId])
+  @@index([token])
+  @@index([status])
+}
+
+model LineItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(18, 6)
+
+  @@index([invoiceId])
+}
+
+model Withdrawal {
+  id              String           @id @default(cuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amountUsdc      Decimal          @db.Decimal(18, 6)
+  amountNgn       Decimal?         @db.Decimal(18, 2)
+  exchangeRate    Decimal?         @db.Decimal(18, 6)
+  status          WithdrawalStatus @default(PENDING)
+  // Yellow Card reference
+  yellowCardRef   String?
+  stellarTxHash   String?
+  failureReason   String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model WebhookEvent {
+  id        String   @id @default(cuid())
+  source    String   // "moonpay" | "yellowcard"
+  eventType String
+  payload   Json
+  processed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([source, processed])
+}
